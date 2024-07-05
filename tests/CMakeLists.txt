@@ -1,4 +1,4 @@
-Include(FetchContent)
+include(FetchContent)
 
 FetchContent_Declare(
   Catch2
@@ -10,8 +10,13 @@ FetchContent_MakeAvailable(Catch2)
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
-add_executable(tests tests.cpp test_basic.cpp)
+add_executable(
+  tests
+  test_allocator.cpp
+  test_util.cpp
+)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 include(CTest)
 include(Catch)
