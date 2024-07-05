@@ -14,6 +14,7 @@ add_executable(
   tests
   test_allocator.cpp
   test_util.cpp
+  test_memory.cpp
 )
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
