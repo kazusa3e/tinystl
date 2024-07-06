@@ -59,3 +59,80 @@ TEST_CASE("Unique Ptr Tests", "[memory]") {
         REQUIRE(*ptr == 42);
     }
 }
+
+TEST_CASE("Shared Ptr Tests") {
+    SECTION("Default constructor") {
+        shared_ptr<int> ptr;
+        REQUIRE(ptr.get() == nullptr);
+    }
+
+    SECTION("Constructor with raw pointer") {
+        int* rawPtr = new int(42);
+        shared_ptr<int> ptr(rawPtr);
+        REQUIRE(ptr.get() == rawPtr);
+        REQUIRE(ptr.use_count() == 1);
+    }
+
+    SECTION("Copy constructor") {
+        shared_ptr<int> ptr1(new int(42));
+        shared_ptr<int> ptr2(ptr1);
+        REQUIRE(ptr1.get() == ptr2.get());
+        REQUIRE(ptr1.use_count() == 2);
+        REQUIRE(ptr2.use_count() == 2);
+    }
+
+    SECTION("Copy assignment operator") {
+        shared_ptr<int> ptr1(new int(42));
+        shared_ptr<int> ptr2;
+        ptr2 = ptr1;
+        REQUIRE(ptr1.get() == ptr2.get());
+        REQUIRE(ptr1.use_count() == 2);
+        REQUIRE(ptr2.use_count() == 2);
+    }
+
+    SECTION("Move constructor") {
+        shared_ptr<int> ptr1(new int(42));
+        shared_ptr<int> ptr2(std::move(ptr1));
+        REQUIRE(ptr1.get() == nullptr);
+        REQUIRE(ptr2.use_count() == 1);
+        REQUIRE(*ptr2 == 42);
+    }
+
+    SECTION("Move assignment operator") {
+        shared_ptr<int> ptr1(new int(42));
+        shared_ptr<int> ptr2;
+        ptr2 = std::move(ptr1);
+        REQUIRE(ptr1.get() == nullptr);
+        REQUIRE(ptr2.use_count() == 1);
+        REQUIRE(*ptr2 == 42);
+    }
+
+    SECTION("Reset") {
+        shared_ptr<int> ptr(new int(42));
+        ptr.reset();
+        REQUIRE(ptr.get() == nullptr);
+    }
+
+    SECTION("Reset with raw pointer") {
+        shared_ptr<int> ptr(new int(42));
+        int* rawPtr = new int(24);
+        ptr.reset(rawPtr);
+        REQUIRE(ptr.get() == rawPtr);
+    }
+
+    SECTION("Use count") {
+        shared_ptr<int> ptr1(new int(42));
+        shared_ptr<int> ptr2(ptr1);
+        shared_ptr<int> ptr3(ptr1);
+        REQUIRE(ptr1.use_count() == 3);
+        REQUIRE(ptr2.use_count() == 3);
+        REQUIRE(ptr3.use_count() == 3);
+    }
+
+    SECTION("Make shared") {
+        auto ptr = std::make_shared<int>(42);
+        REQUIRE(*ptr == 42);
+        REQUIRE(ptr.use_count() == 1);
+    }
+
+}
