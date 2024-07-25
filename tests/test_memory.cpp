@@ -135,4 +135,39 @@ TEST_CASE("Shared Ptr Tests") {
         REQUIRE(ptr.use_count() == 1);
     }
 
+    SECTION("Weak Ptr") {
+        shared_ptr<int> sharedPtr(new int(42));
+        weak_ptr<int> weakPtr(sharedPtr);
+
+        SECTION("Expired") {
+            REQUIRE_FALSE(weakPtr.expired());
+            sharedPtr.reset();
+            REQUIRE(weakPtr.expired());
+        }
+
+        SECTION("Lock") {
+            auto lockedPtr = weakPtr.lock();
+            REQUIRE(lockedPtr.get() != nullptr);
+            REQUIRE(*lockedPtr == 42);
+            sharedPtr.reset();
+            REQUIRE(lockedPtr.get() != nullptr);
+        }
+
+        SECTION("Swap") {
+            shared_ptr<int> ptr1(new int(42));
+            shared_ptr<int> ptr2(new int(24));
+            REQUIRE(ptr1.get() != ptr2.get());
+            REQUIRE(ptr1.use_count() == 1);
+            REQUIRE(ptr2.use_count() == 1);
+
+            ptr1.swap(ptr2);
+
+            REQUIRE(ptr1.get() != ptr2.get());
+            REQUIRE(ptr1.use_count() == 1);
+            REQUIRE(ptr2.use_count() == 1);
+            REQUIRE(*ptr1 == 24);
+            REQUIRE(*ptr2 == 42);
+        }
+    }
+
 }
